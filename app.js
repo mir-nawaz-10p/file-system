@@ -72,5 +72,5 @@ app.get('/files', function(req, res) {
 });
 
 app.get('/', function(req, res) {
-  res.redirect('lib/template.html');
+  res.redirect('web/index.html');
 });
