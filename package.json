@@ -1,0 +1,25 @@
+{
+  "author": {
+    "name": "Mir Nawaz"
+  },
+  "dependencies": {
+    "commander": "~2.3",
+    "express": "~4.4",
+    "lodash": "~2.4"
+  },
+  "description": "file-browser",
+  "devDependencies": {
+    "eslint": "^3.18.0",
+    "mocha": "1.20.1"
+  },
+  "license": "MIT",
+  "main": "file-browser",
+  "name": "file-browser",
+  "readme": "ERROR: No README data found!",
+  "scripts": {
+    "start": "node app.js",
+    "lint": "./node_modules/.bin/eslint *.js lib/ --cache --ignore-pattern api/doc",
+    "fix": "./node_modules/.bin/eslint *.js lib/ --fix"
+  },
+  "version": "0.0.1"
+}
