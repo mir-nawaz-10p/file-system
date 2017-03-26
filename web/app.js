@@ -46,6 +46,7 @@
         "fnCreatedRow" :  function( nRow, aData, iDataIndex ) {
           if (!aData.IsDirectory) return;
           var path = aData.Path;
+          console.log(path)
           $(nRow).bind("click", function(e){
              $.get('/files?path='+ path).then(function(data){
               table.fnClearTable();
@@ -61,7 +62,7 @@
               if (data.IsDirectory) {
                 return "<a href='#' target='_blank'><i class='fa fa-folder'></i>&nbsp;" + data.Name +"</a>";
               } else {
-                return "<a href='/" + data.Path + "' target='_blank'><i class='fa " + getFileIcon(data.Ext) + "'></i>&nbsp;" + data.Name +"</a>";
+                return "<a href='/file-details?path=" + data.Path + "' target='_blank'><i class='fa " + getFileIcon(data.Ext) + "'></i>&nbsp;" + data.Name +"</a>";
               }
             }
           }

@@ -1,0 +1,16 @@
+[
+  {
+    "Name": "home-file.txt",
+    "Server": [
+      "server-1",
+      "server-2"
+    ]
+  },
+  {
+    "Name": "home-file2.txt",
+    "Server": [
+      "server-2",
+      "server-1"
+    ]
+  }
+]
