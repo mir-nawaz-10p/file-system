@@ -44,25 +44,43 @@
         "bAutoWidth": false,
          "sScrollY":"250px",
         "fnCreatedRow" :  function( nRow, aData, iDataIndex ) {
-          if (!aData.IsDirectory) return;
           var path = aData.Path;
-          console.log(path)
-          $(nRow).bind("click", function(e){
-             $.get('/files?path='+ path).then(function(data){
-              table.fnClearTable();
-              table.fnAddData(data);
-              currentPath = path;
+          if (!aData.IsDirectory) {
+              $(nRow).bind("click", function(e){
+                 if(!path) return;
+                 $.get('/file-details?path='+ path).then(function(data){
+                  data = {
+                    file: data,
+                    Name: path
+                  };
+                  table.fnClearTable();
+                  table.fnAddData(data);
+                  currentPath = path;
+                });
+              e.preventDefault();
             });
-            e.preventDefault();
-          });
+          }
+          else{
+            $(nRow).bind("click", function(e){
+               $.get('/files?path='+ path).then(function(data){
+                table.fnClearTable();
+                table.fnAddData(data);
+                currentPath = path;
+              });
+              e.preventDefault();
+            });
+          }
         }, 
         "aoColumns": [
           { "sTitle": "", "mData": null, "bSortable": false, "sClass": "head0", "sWidth": "55px",
             "render": function (data, type, row, meta) {
+              if(data.file){
+                return "<p>"+data.Name+"</p> <textarea name='file' class='file-content'>"+ data.file +"</textarea>";
+              }
               if (data.IsDirectory) {
                 return "<a href='#' target='_blank'><i class='fa fa-folder'></i>&nbsp;" + data.Name +"</a>";
               } else {
-                return "<a href='/file-details?path=" + data.Path + "' target='_blank'><i class='fa " + getFileIcon(data.Ext) + "'></i>&nbsp;" + data.Name +"</a>";
+                return "<a href='#' target='_blank'><i class='fa " + getFileIcon(data.Ext) + "'></i>&nbsp;" + data.Name +"</a>";
               }
             }
           }
