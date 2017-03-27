@@ -56,6 +56,7 @@
                         table.fnClearTable();
                         table.fnAddData(data);
                         currentPath = path;
+                        setTimeout(function(){ editFile(); }, 500);
                     });
                     e.preventDefault();
                 });
@@ -81,10 +82,12 @@
                 if (data.create) {
                     return "File Name: <input type='text' id='file-name'><br>\
                      File Content: <textarea name='file' class='file-text' id='file-content'> </textarea>\
-                     <button class='submit-file'> Submit </button>";
+                     <button class='create-file'> Submit </button>";
                 }
                 if (data.file) {
-                    return "<p>" + data.Name + "</p> <textarea name='file' class='file-content'>" + data.file + "</textarea>";
+                    return "File Name: <input type='text' id='edit-name' value='"+data.Name+"' readonly><br>\
+                    <textarea name='file' class='file-content' id='edit-content'>" + data.file + "</textarea>\
+                    <button class='edit-file'> Submit </button>";
                 }
                 if (data.IsDirectory) {
                     return "<a href='#' target='_blank'><i class='fa fa-folder'></i>&nbsp;" + data.Name + "</a>";
@@ -115,6 +118,7 @@
 
     $(".create-file").bind("click", function(e) {
         if (!currentPath) currentPath = '';
+        if(currentPath.indexOf('/create') >= 0) return;
         currentPath += '/create';
         table.fnClearTable();
         table.fnAddData({create: true});
@@ -122,16 +126,25 @@
     });
 
     function submitFile(){
-        $(".submit-file").bind("click", function(e) {
+        $(".create-file").bind("click", function(e) {
             let request = {
                 name: $("input#file-name").val(),
                 content: $("textarea#file-content").val()
             }
-            if(!request.data || request.content){
-                alert("input fields required");
-            }
+            console.log('create file create file create file ');
+            console.log(request);
         });
     }
-    
+
+    function editFile(){
+        $(".edit-file").bind("click", function(e) {
+            let request = {
+                name: $("input#edit-name").val(),
+                content: $("textarea#edit-content").val()
+            }
+            console.log('edit file edit file edit file ');
+            console.log(request);
+        });
+    }
 
 })(jQuery);

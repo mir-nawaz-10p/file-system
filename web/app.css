@@ -18,7 +18,7 @@ body { left:10%;width:80%;position:absolute; top:10%; color: black!important;}
 
 .up { margin-left: 20px; border:solid 1px black; cursor:pointer; width:100px; padding-left: 10px; padding-right:10px; }
 
-.file-content { width:100%; min-height:200px;}
+.file-content { width:100%; min-height:150px;}
 
 .create-file { margin-left: 20px; border:solid 1px black; cursor:pointer; width:100px; padding-left: 10px; padding-right:10px; }
 
