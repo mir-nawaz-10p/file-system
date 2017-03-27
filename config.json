@@ -1,24 +1,13 @@
 {
   "rootDir": "/root",
   "rootWeb": "/web",
+  "port": 3000,
   "servers": [
     {
       "name": "server-1",
       "host": "127.0.0.1",
       "port": "3001",
       "live": true
-    },
-    {
-      "name": "server-2",
-      "host": "127.0.0.1",
-      "port": "3002",
-      "live": true
-    },
-    {
-      "name": "server-3",
-      "host": "127.0.0.1",
-      "port": "3002",
-      "live": true
-    }
+    }  
   ]
 }

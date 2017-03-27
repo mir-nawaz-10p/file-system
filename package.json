@@ -3,7 +3,6 @@
     "name": "Mir Nawaz"
   },
   "dependencies": {
-    "commander": "~2.3",
     "express": "~4.4",
     "lodash": "~2.4",
     "request": "^2.81.0"
