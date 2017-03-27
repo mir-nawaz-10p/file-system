@@ -27,6 +27,5 @@ app.get('/challenge', lib.challenge);
 app.get('/file-details', lib.fileDetails);
 
 app.get('/', function(req, res) {
-  res.redirect(`${global.webDir}/index.html`);
+    res.redirect(`${global.webDir}/index.html`);
 });
-
