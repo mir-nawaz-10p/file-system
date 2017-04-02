@@ -4,7 +4,7 @@
   },
   "dependencies": {
     "express": "~4.4",
-    "lodash": "~2.4",
+    "lodash": "~4.17.4",
     "request": "^2.81.0"
   },
   "description": "file-browser",

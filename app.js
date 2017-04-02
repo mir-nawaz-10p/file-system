@@ -30,6 +30,8 @@ app.post('/create', lib.fileCreate);
 
 app.post('/update', lib.fileUpdate);
 
+app.get('/stats', lib.stats);
+
 app.get('/', function(req, res) {
     res.redirect(`${global.webDir}/index.html`);
 });

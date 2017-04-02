@@ -78,7 +78,9 @@
             "sClass": "head0",
             "sWidth": "55px",
             "render": function(data, type, row, meta) {
-                
+                if(data.length === 0){
+                    return "<p> No File </p>";
+                }
                 if (data.create) {
                     return "File Name: <input type='text' id='file-name'><br>\
                      File Content: <textarea name='file' class='file-text' id='file-content'> </textarea>\
