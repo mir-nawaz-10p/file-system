@@ -1,5 +1,19 @@
 [
   {
+    "Name": "home-1.txt",
+    "Server": [
+      "current"
+    ],
+    "Edit": false
+  },
+  {
+    "Name": "home-2.txt",
+    "Server": [
+      "current"
+    ],
+    "Edit": false
+  },
+  {
     "Name": "home-3.txt",
     "Server": [
       "server-1"

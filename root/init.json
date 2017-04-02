@@ -1,5 +1,12 @@
 [
   {
+    "Name": "root-1.txt",
+    "Server": [
+      "current"
+    ],
+    "Edit": false
+  },
+  {
     "Name": "root-3.txt",
     "Server": [
       "server-1"

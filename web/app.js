@@ -48,7 +48,7 @@
             if (!aData.IsDirectory) {
                 $(nRow).bind("click", function(e) {
                     if (!path) return;
-                    $.get('/file-details?path=' + path).then(function(data) {
+                    $.get('/file?path=' + path).then(function(data) {
                         data = {
                             file: data,
                             Name: path.split('&')[0]
@@ -126,13 +126,28 @@
     });
 
     function submitFile(){
+        if (currentPath.indexOf('/create') < 0 ) return;
         $(".create-file").bind("click", function(e) {
             let request = {
                 name: $("input#file-name").val(),
                 content: $("textarea#file-content").val()
             }
-            console.log('create file create file create file ');
-            console.log(request);
+            if(request.name < 3 || request.content < 5){
+                alert('create input fields are required')
+            }
+            else{
+                $.post('/create', {path: currentPath, content:request.content, name: request.name}, 'application/json')
+                .then(function(data) {
+                    var idx = currentPath.lastIndexOf("/");
+                    var path = currentPath.substr(0, idx);
+                    $.get('/files?path=' + path).then(function(data) {
+                        table.fnClearTable();
+                        table.fnAddData(data);
+                        currentPath = path;
+                    });
+                });
+            }
+            e.preventDefault();
         });
     }
 
@@ -142,8 +157,22 @@
                 name: $("input#edit-name").val(),
                 content: $("textarea#edit-content").val()
             }
-            console.log('edit file edit file edit file ');
-            console.log(request);
+            if(request.name < 3 || request.content < 5){
+                alert(' edit input fields are required')
+            }
+            else{
+            $.post('/update', {path: currentPath, content:request.content, name: request.name})
+                .then(function(data) {
+                    var idx = currentPath.lastIndexOf("/");
+                    var path = currentPath.substr(0, idx);
+                    $.get('/files?path=' + path).then(function(data) {
+                        table.fnClearTable();
+                        table.fnAddData(data);
+                        currentPath = path;
+                    });
+                });
+            }
+            e.preventDefault();
         });
     }
 

@@ -24,7 +24,11 @@ app.get('/files', lib.get);
 
 app.get('/challenge', lib.challenge);
 
-app.get('/file-details', lib.fileDetails);
+app.get('/file', lib.fileDetails);
+
+app.post('/create', lib.fileCreate);
+
+app.post('/update', lib.fileUpdate);
 
 app.get('/', function(req, res) {
     res.redirect(`${global.webDir}/index.html`);
