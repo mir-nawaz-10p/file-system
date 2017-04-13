@@ -18,15 +18,28 @@
             <span class="up">
                     <i class="fa fa-level-up"></i> Up
                    </span>
-            <span class="create-file">
-                    <i class="fa fa-plus"></i> Create
-                   </span>
         </div>
         <div class="panel-body">
             <table class="linksholder">
             </table>
         </div>
+        <div class="panel-heading">
+            <span class="create-button">
+                    <i class="fa fa-plus"></i> Create File / Directory
+                   </span>
+        </div>
+        <div class="panel-body create-div">
+            <div class="createHolder">
+                    Name: <input type='text' id='name'><br>
+                        <div class="checks">
+                          <input type="checkbox"  class="myCheckbox" value="file"/> File <br>
+                          <input type="checkbox"  class="myCheckbox" value="directory" /> Directory
+                        </div>                     
+            <button class='create-file create-but'> Submit </button>
+            </div>
+        </div>
     </div>
+    <div class='toast' style='display:none'></div>
     <script src="jquery.min.js"></script>
     <script src="bootstrap.min.js"></script>
     <script src="assets/js/jquery.datatables.min.js"></script>

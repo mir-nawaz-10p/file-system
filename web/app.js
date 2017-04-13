@@ -45,10 +45,12 @@
         "sScrollY": "250px",
         "fnCreatedRow": function(nRow, aData, iDataIndex) {
             var path = aData.Path;
+            hide();
             if (!aData.IsDirectory) {
                 $(nRow).bind("click", function(e) {
                     if (!path) return;
-                    $.get('/file?path=' + path).then(function(data) {
+                    $.get('/file?path=' + path)
+                    .done(function(data) {
                         data = {
                             file: data,
                             Name: path.split('&')[0]
@@ -57,12 +59,17 @@
                         table.fnAddData(data);
                         currentPath = path;
                         setTimeout(function(){ editFile(); }, 500);
+                    })
+                    .fail(function(){
+                        toast('No File');
                     });
                     e.preventDefault();
                 });
-            } else {
+            } 
+            else {
                 $(nRow).bind("click", function(e) {
-                    $.get('/files?path=' + path).then(function(data) {
+                    $.get('/files?path=' + path)
+                    .then(function(data) {
                         table.fnClearTable();
                         table.fnAddData(data);
                         currentPath = path;
@@ -81,19 +88,16 @@
                 if(data.length === 0){
                     return "<p> No File </p>";
                 }
-                if (data.create) {
-                    return "File Name: <input type='text' id='file-name'><br>\
-                     File Content: <textarea name='file' class='file-text' id='file-content'> </textarea>\
-                     <button class='create-file'> Submit </button>";
-                }
-                if (data.file) {
+                else if (data.file) {
+                    var disable = data.file.indexOf('Error getting the file:') >= 0 ? 'disabled' : '';
                     return "File Name: <input type='text' id='edit-name' value='"+data.Name+"' readonly><br>\
                     <textarea name='file' class='file-content' id='edit-content'>" + data.file + "</textarea>\
-                    <button class='edit-file'> Submit </button>";
+                    <button class='edit-file' "+disable+"> Submit </button>";
                 }
-                if (data.IsDirectory) {
+                else if (data.IsDirectory) {
                     return "<a href='#' target='_blank'><i class='fa fa-folder'></i>&nbsp;" + data.Name + "</a>";
-                } else {
+                } 
+                else {
                     return "<a href='#' target='_blank'><i class='fa " + getFileIcon(data.Ext) + "'></i>&nbsp;" + data.Name + "</a>";
                 }
             }
@@ -101,6 +105,8 @@
     };
 
     var table = $(".linksholder").dataTable(options);
+    
+    hide();
 
     $.get('/files').then(function(data) {
         table.fnClearTable();
@@ -111,7 +117,8 @@
         if (!currentPath) return;
         var idx = currentPath.lastIndexOf("/");
         var path = currentPath.substr(0, idx);
-        $.get('/files?path=' + path).then(function(data) {
+        $.get('/files?path=' + path)
+        .done(function(data) {
             table.fnClearTable();
             table.fnAddData(data);
             currentPath = path;
@@ -119,38 +126,42 @@
     });
 
     $(".create-file").bind("click", function(e) {
-        if (!currentPath) currentPath = '';
-        if(currentPath.indexOf('/create') >= 0) return;
-        currentPath += '/create';
-        table.fnClearTable();
-        table.fnAddData({create: true});
-        setTimeout(function(){ submitFile(); }, 500);
+        var type = $(".myCheckbox:checked").val();
+        var name = $("input#name").val();
+        if(name < 3 || type < 2){
+            toast('input fields are required')
+        }
+        else{
+            $.post('/create', {path: currentPath, type:type, name: name}, 'application/json')
+            .done(function(data) {
+                $("input#name").val('');
+                $(".myCheckbox:checked").attr('checked', false);
+                var ext = name.split(".");
+                table.fnAddData({
+                    IsDirectory: !!(type === 'directory'),
+                    Name: name,
+                    Ext:  ext[1] && !(type === 'directory') ? "."+ext[1] : undefined,
+                    Path: currentPath ?  currentPath+'/'+name : name
+                });
+                hide();
+                toast(name+' created');
+            })
+            .fail(function(err){
+                toast(err.responseText);
+            });
+        }
     });
 
-    function submitFile(){
-        if (currentPath.indexOf('/create') < 0 ) return;
-        $(".create-file").bind("click", function(e) {
-            let request = {
-                name: $("input#file-name").val(),
-                content: $("textarea#file-content").val()
-            }
-            if(request.name < 3 || request.content < 5){
-                alert('create input fields are required')
-            }
-            else{
-                $.post('/create', {path: currentPath, content:request.content, name: request.name}, 'application/json')
-                .then(function(data) {
-                    var idx = currentPath.lastIndexOf("/");
-                    var path = currentPath.substr(0, idx);
-                    $.get('/files?path=' + path).then(function(data) {
-                        table.fnClearTable();
-                        table.fnAddData(data);
-                        currentPath = path;
-                    });
-                });
-            }
-            e.preventDefault();
-        });
+    $(".create-button").bind("click", function(e) {
+        toggle();
+    });
+
+    function toggle(){
+        $('.createHolder').toggle('hide', function() {});
+    }
+
+    function hide() {
+        $(".createHolder").hide();
     }
 
     function editFile(){
@@ -160,7 +171,7 @@
                 content: $("textarea#edit-content").val()
             }
             if(request.name < 3 || request.content < 5){
-                alert(' edit input fields are required')
+                toast('input fields are required')
             }
             else{
             $.post('/update', {path: currentPath, content:request.content, name: request.name})
@@ -177,5 +188,18 @@
             e.preventDefault();
         });
     }
+
+    $('.myCheckbox').click(function() {
+        $(this).siblings('input:checkbox').prop('checked', false);
+    });
+
+    $('.selectme input:checkbox').click(function() {
+        $('.selectme input:checkbox').not(this).prop('checked', false);
+    });  
+
+    function toast(msg) {
+       $('.toast').html(msg);
+       $('.toast').fadeIn(400).delay(1000).fadeOut(400);
+    } 
 
 })(jQuery);
