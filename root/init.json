@@ -2,32 +2,14 @@
   {
     "Name": "root-1.txt",
     "Server": [
-      "current"
+      "server-0"
     ],
     "Edit": false,
     "CreatedAt": 1491122602811,
     "UpdatedAt": 1491122602811
   },
   {
-    "Name": "root-3.txt",
-    "Server": [
-      "server-1"
-    ],
-    "Edit": false,
-    "CreatedAt": 1491122602811,
-    "UpdatedAt": 1491122602811
-  },
-  {
-    "Name": "root-4.txt",
-    "Server": [
-      "server-1"
-    ],
-    "Edit": false,
-    "CreatedAt": 1491122602811,
-    "UpdatedAt": 1491122602811
-  },
-  {
-    "Name": "root-5.txt",
+    "Name": "root-2.txt",
     "Server": [
       "server-1"
     ],
