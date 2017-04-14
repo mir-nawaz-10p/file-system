@@ -17,11 +17,11 @@ global.webDir = `${__dirname}/web`;
 app.use(express.static(global.dir));
 app.use(express.static(global.webDir));
 
-app.use(bodyParser.json({limit: 10000000}));
+app.use(bodyParser.json({ limit: 10000000 }));
 app.use(bodyParser.urlencoded({ extended: true }));
 
-http.createServer(app).listen(config.port, function(){
-	console.log(`Please open the link in your browser http://<YOUR-IP>: ${config.port}`);
+http.createServer(app).listen(config.port, function() {
+  console.log(`Please open the link in your browser http://<YOUR-IP>: ${config.port}`);
 });
 
 app.get('/files', lib.get);
@@ -37,5 +37,5 @@ app.post('/update', lib.fileUpdate);
 app.get('/stats', lib.stats);
 
 app.get('/', function(req, res) {
-    res.redirect(`${global.webDir}/index.html`);
+  res.redirect(`${global.webDir}/index.html`);
 });
