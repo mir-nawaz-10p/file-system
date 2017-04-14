@@ -7,7 +7,7 @@
     ],
     "Edit": false,
     "CreatedAt": 1491122602811,
-    "UpdatedAt": 1492162657000
+    "UpdatedAt": 1492162837858
   },
   {
     "Name": "root-2.txt",
@@ -16,6 +16,35 @@
     ],
     "Edit": false,
     "CreatedAt": 1491122602811,
-    "UpdatedAt": 1492162654397
+    "UpdatedAt": 1492162803820
+  },
+  {
+    "Name": "text-0.txt",
+    "Server": [
+      "server-0"
+    ],
+    "Edit": false,
+    "CreatedAt": 1492164780043,
+    "UpdatedAt": 1492164780043
+  },
+  {
+    "Name": "asdasd",
+    "Server": [
+      "server-0",
+      "server-1"
+    ],
+    "Edit": false,
+    "CreatedAt": 1492170753593,
+    "UpdatedAt": 1492170753593
+  },
+  {
+    "Name": "asdad",
+    "Server": [
+      "server-0",
+      "server-1"
+    ],
+    "Edit": false,
+    "CreatedAt": 1492170833896,
+    "UpdatedAt": 1492170833896
   }
 ]

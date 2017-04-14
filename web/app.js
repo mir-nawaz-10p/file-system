@@ -132,7 +132,7 @@
             toast('input fields are required')
         }
         else{
-            $.post('/create', {path: currentPath, type:type, name: name}, 'application/json')
+            $.post('/create', {path: currentPath, type:type, name: name, replicate: true, callAll: true}, 'application/json')
             .done(function(data) {
                 $("input#name").val('');
                 $(".myCheckbox:checked").attr('checked', false);
