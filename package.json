@@ -18,7 +18,7 @@
   "name": "file-browser",
   "readme": "ERROR: No README data found!",
   "scripts": {
-    "start": "nodemon app.js",
+    "start": "node app.js",
     "lint": "./node_modules/.bin/eslint *.js lib/ --cache --ignore-pattern api/doc",
     "fix": "./node_modules/.bin/eslint *.js lib/ --fix"
   },

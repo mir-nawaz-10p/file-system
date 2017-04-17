@@ -2,8 +2,7 @@
   {
     "Name": "root-1.txt",
     "Server": [
-      "server-0",
-      "server-1"
+      "server-0"
     ],
     "Edit": false,
     "CreatedAt": 1491122602811,
@@ -12,7 +11,7 @@
   {
     "Name": "root-2.txt",
     "Server": [
-      "server-1"
+      "server-0"
     ],
     "Edit": false,
     "CreatedAt": 1491122602811,

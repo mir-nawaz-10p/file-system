@@ -6,6 +6,9 @@ let lib = require('./lib');
 let path = require('path');
 let config = require('./config.json');
 let bodyParser = require('body-parser');
+let request = require('request');
+let fs = require('fs');
+let _ = require('lodash');
 
 let app = express();
 
@@ -39,3 +42,113 @@ app.get('/stats', lib.stats);
 app.get('/', function(req, res) {
   res.redirect(`${global.webDir}/index.html`);
 });
+
+
+getStats()
+.then(function(folders){
+	folders = JSON.parse(folders);
+	for (let name in folders) {
+	  if(!_.isNaN(+name)){
+	  	let dir = global.dir+folders[name];
+	  	if (!fs.existsSync(dir)) {
+		  fs.mkdirSync(dir);
+		  fs.writeFileSync(dir+'init.json', '[]');
+		}
+	  }
+	  if(typeof folders[name] === 'object' && folders[name].length > 0){
+	  		let dir = global.dir+name;
+	  		let initFile = dir+'init.json';
+	  		if(!fs.existsSync(initFile)){
+	  			fs.writeFileSync(dir+'init.json', '[]');
+	  		}
+	  		fs.writeFileSync(dir+'init.json', JSON.stringify(folders[name], null, 2));
+	  		for(let file of folders[name]){
+	  			let fileDir = dir+file.Name;
+	  			let servers = file.Server;
+	  			let index = _.indexOf(servers, config.name);
+	  			if(index >= 0){
+	  				servers.splice(index, 1);
+	  				let filePath = name+file.Name;
+	  				filePath = filePath.slice(0,0) + filePath.slice(1);
+	  				getFileContent(servers, filePath, function(err, res){
+	  						if(err){
+	  							console.log(err);
+	  						} 
+	  						else{
+	  							fs.writeFileSync(fileDir, res);
+	  						}
+	  				});
+	  			}
+	  		}
+	  }
+	}
+})
+.catch(function(err){
+console.log(err);
+});
+
+function getStats(){
+	return new Promise(function(resolve, reject){
+		let servers = _.filter(config.servers, {live: true});
+		_.remove(servers, {name: config.name});
+		servers = _.sortBy(servers, ['cost']);
+		_stats(servers, function(err, res){
+			if(err) reject(err);
+			resolve(res);
+		});
+	});
+}
+
+function _stats(servers, callback){
+	if (servers.length === 0) {
+    	return callback('No Server live for Sync ... ');
+  	}
+	let server = servers[0];
+	let options = {
+	      method: 'GET',
+				url: `http://${server.host}:${server.port}/stats`
+		};
+  request(options, function(error, response, body) {
+		  if (error) {
+		  	servers.shift();
+      _stats(servers, callback);
+		  }
+		  else{
+		  	callback(undefined, body);
+		  }
+  });
+}
+
+
+function getFileContent(servers, pathname, callback) {
+  
+  let length = servers.length;
+
+  if (servers.length === 0) {
+    callback('No Server live ...', undefined);
+  }
+  else {
+    let hostConfig = _.find(config.servers, { name: servers[0], live: true });
+    if (!hostConfig) {
+      servers.shift();
+      getFileContent(servers, pathname, callback);
+    }
+    else {
+      let options = {
+        method: 'GET',
+		url: `http://${hostConfig.host}:${hostConfig.port}/file`,
+		qs: { path: pathname }
+	};
+  request(options, function(error, response, body) {
+	  if (error || body.indexOf('Not found') >= 0) {
+	  	servers.shift();
+  		getFileContent(servers, pathname, callback);
+	  }
+	  else {
+  		callback(undefined, body);
+	  }
+  });
+    }
+  }
+
+}
