@@ -2,7 +2,8 @@
   {
     "Name": "root-1.txt",
     "Server": [
-      "server-0"
+      "server-0",
+      "server-1"
     ],
     "Edit": false,
     "CreatedAt": 1491122602811,
