@@ -1,3 +1,1 @@
-Server 3000 mir 1231 3213 asdad
-
-update
+ root -1 1 1 1 1 1 1

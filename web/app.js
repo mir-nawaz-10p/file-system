@@ -78,7 +78,7 @@
                 });
             }
             $('.head1', nRow).bind("click", function(e) {
-                $.post('delete', {path: aData.Path, isDirectory: aData.IsDirectory})
+                $.post('delete', {path: aData.Path, isDirectory: aData.IsDirectory, callAll: true})
                 .done(function(data) {
                     table.fnDeleteRow(nRow);
                 })
