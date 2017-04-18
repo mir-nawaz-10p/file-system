@@ -96,7 +96,7 @@
             "sWidth": "55px",
             "render": function(data, type, row, meta) {
                 if(data.length === 0){
-                    return "No Files ... ";
+                    return "";
                 }
                 else if (data.file) {
                     var disable = data.file.indexOf('Error getting the file:') >= 0 ? 'disabled' : '';
