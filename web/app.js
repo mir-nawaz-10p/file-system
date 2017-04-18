@@ -78,7 +78,13 @@
                 });
             }
             $('.head1', nRow).bind("click", function(e) {
-                console.log('delete');
+                $.post('delete', {path: aData.Path, isDirectory: aData.IsDirectory})
+                .done(function(data) {
+                    table.fnDeleteRow(nRow);
+                })
+                .fail(function(){
+                    toast('No File');
+                });
                 e.preventDefault();
             });
         },
@@ -113,7 +119,12 @@
             "sClass": "head1",
             "sWidth": "5px",
             "render": function(data, type, row, meta) {
-                return "<a href='#' target='_blank'><i class='fa fa-trash'></i></a>"
+                if (!data.file){
+                    return "<a href='#' target='_blank'><i class='fa fa-trash'></i></a>";
+                }
+                else{
+                    return '';
+                }
             }
         }
         ]

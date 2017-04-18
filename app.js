@@ -37,6 +37,8 @@ app.post('/create', lib.fileCreate);
 
 app.post('/update', lib.fileUpdate);
 
+app.post('/delete', lib.deleteFile);
+
 app.get('/stats', lib.stats);
 
 app.get('/', function(req, res) {
