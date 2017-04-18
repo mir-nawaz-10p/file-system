@@ -47,7 +47,7 @@
             var path = aData.Path;
             hide();
             if (!aData.IsDirectory) {
-                $(nRow).bind("click", function(e) {
+                $('.head0', nRow).bind("click", function(e) {
                     if (!path) return;
                     $.get('/file?path=' + path)
                     .done(function(data) {
@@ -67,7 +67,7 @@
                 });
             } 
             else {
-                $(nRow).bind("click", function(e) {
+                $('.head0', nRow).bind("click", function(e) {
                     $.get('/files?path=' + path)
                     .then(function(data) {
                         table.fnClearTable();
@@ -77,6 +77,10 @@
                     e.preventDefault();
                 });
             }
+            $('.head1', nRow).bind("click", function(e) {
+                console.log('delete');
+                e.preventDefault();
+            });
         },
         "aoColumns": [{
             "sTitle": "",
@@ -101,7 +105,18 @@
                     return "<a href='#' target='_blank'><i class='fa " + getFileIcon(data.Ext) + "'></i>&nbsp;" + data.Name + "</a>";
                 }
             }
-        }]
+        },
+        {
+            "sTitle": "",
+            "mData": null,
+            "bSortable": false,
+            "sClass": "head1",
+            "sWidth": "5px",
+            "render": function(data, type, row, meta) {
+                return "<a href='#' target='_blank'><i class='fa fa-trash'></i></a>"
+            }
+        }
+        ]
     };
 
     var table = $(".linksholder").dataTable(options);
