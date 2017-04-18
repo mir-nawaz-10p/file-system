@@ -96,7 +96,7 @@
             "sWidth": "55px",
             "render": function(data, type, row, meta) {
                 if(data.length === 0){
-                    return "";
+                    return "No Files ... ";
                 }
                 else if (data.file) {
                     var disable = data.file.indexOf('Error getting the file:') >= 0 ? 'disabled' : '';
@@ -119,7 +119,7 @@
             "sClass": "head1",
             "sWidth": "5px",
             "render": function(data, type, row, meta) {
-                if (!data.file){
+                if (!data.file && data.length > 0){
                     return "<a href='#' target='_blank'><i class='fa fa-trash'></i></a>";
                 }
                 else{
