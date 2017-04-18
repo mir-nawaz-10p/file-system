@@ -99,8 +99,11 @@
                     return "";
                 }
                 else if (data.file) {
+                    var idx = data.Name.lastIndexOf("/");
+                    var name = idx ? data.Name.substr(idx+1) : data.Name;
+
                     var disable = data.file.indexOf('Error getting the file:') >= 0 ? 'disabled' : '';
-                    return "File Name: <input type='text' id='edit-name' value='"+data.Name+"' readonly><br>\
+                    return "<p> File: <b>"+name+" </b></p>\
                     <textarea name='file' class='file-content' id='edit-content'>" + data.file + "</textarea>\
                     <button class='edit-file' "+disable+"> Submit </button>";
                 }
