@@ -119,7 +119,10 @@
             "sClass": "head1",
             "sWidth": "5px",
             "render": function(data, type, row, meta) {
-                if (!data.file && data.length > 0){
+                if(data.length === 0){
+                    return "";
+                }
+                if (!data.file){
                     return "<a href='#' target='_blank'><i class='fa fa-trash'></i></a>";
                 }
                 else{
