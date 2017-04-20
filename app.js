@@ -176,14 +176,14 @@ function updateConfig(){
 	return new Promise(function(resolve){
 		var current = _.find(config.servers, {name: config.name});
 		if(!current){
-			var host = {
+			current = {
 				name: config.name,
 				host: config.host,
 				port: config.port,
 				cost: config.cost,
 				live: true
 			}
-			config.servers.push(host);
+			config.servers.push(current);
 		}
 		else{
 			_.remove(config.servers, {name: config.name})
