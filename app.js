@@ -234,7 +234,7 @@ cron.schedule('*/10 * * * * *', function(){
   
   for(let server of config.servers){
   	let url = `http://${server.host}:${server.port}/challenge`;
-  	heartBeat(url)
+  	heartBeat(url, config, server)
   	.then(function(res){
   		if(res){
 				config.servers = _.concat(config.servers, _.differenceBy(JSON.parse(res), config.servers, 'name'));
@@ -253,8 +253,11 @@ cron.schedule('*/10 * * * * *', function(){
 });
 
 
-function heartBeat(url){
+function heartBeat(url, config, server){
   return new Promise(function(resolve, reject){
+  	if(config.name === server.name){
+  		resolve(false);
+  	}
     var options = { method: 'GET', url: url};
     request(options, function (error, response, body) {
       if (error) resolve(false);
