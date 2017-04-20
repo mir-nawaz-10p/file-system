@@ -39,6 +39,8 @@ app.post('/update', lib.fileUpdate);
 
 app.post('/delete', lib.deleteFile);
 
+app.post('/config', lib.updateConfig);
+
 app.get('/stats', lib.stats);
 
 app.get('/', function(req, res) {
@@ -47,8 +49,8 @@ app.get('/', function(req, res) {
 
 
 getStats()
-.then(function(folders){
-	folders = JSON.parse(folders);
+.then(function(res){
+	let folders = JSON.parse(folders).stats;
 	for (let name in folders) {
 	  if(!_.isNaN(+name)){
 	  	let dir = global.dir+folders[name];
@@ -137,20 +139,71 @@ function getFileContent(servers, pathname, callback) {
     }
     else {
       let options = {
-        method: 'GET',
-		url: `http://${hostConfig.host}:${hostConfig.port}/file`,
-		qs: { path: pathname }
-	};
-  request(options, function(error, response, body) {
-	  if (error || body.indexOf('Not found') >= 0) {
-	  	servers.shift();
-  		getFileContent(servers, pathname, callback);
-	  }
-	  else {
-  		callback(undefined, body);
-	  }
-  });
+	        method: 'GET',
+			url: `http://${hostConfig.host}:${hostConfig.port}/file`,
+			qs: { path: pathname }
+		};
+	  request(options, function(error, response, body) {
+		  if (error || body.indexOf('Not found') >= 0) {
+		  	servers.shift();
+	  		getFileContent(servers, pathname, callback);
+		  }
+		  else {
+	  		callback(undefined, body);
+		  }
+	  });
     }
   }
 
+}
+
+updateConfig();
+
+function updateConfig(){
+	var current = _.find(config.servers, {name: config.name});
+	if(!current){
+		var host = {
+			name: config.name,
+			host: config.host,
+			port: config.port,
+			cost: config.cost,
+			live: true
+		}
+		config.servers.push(host);
+	}
+	else{
+		_.remove(config.servers, {name: config.name})
+		current.live = true;
+		current.cost = config.cost;
+		config.servers.push(current);
+	}
+	var servers = config.servers;
+	_.remove(servers,{name:config.name});
+	let promises = [];
+	for(let server of servers){
+		var url = `http://${server.host}:${server.port}/config`;
+    var body = {
+      replicate: config.replicate,
+      server: current
+    }
+    promises.push(requestServer(url, body));
+	}	
+	Promise.all(promises)
+	.then()
+	.catch();
+	fs.writeFile(path.join(global.home, 'config.json'), JSON.stringify(config, null, 2), function(err) {});
+}
+
+function requestServer(url, body){
+  return new Promise(function(resolve, reject){
+    var options = { method: 'POST',
+      url: url,
+      body: body,
+      json: true };
+
+    request(options, function (error, response, body) {
+      if (error) reject(error);
+      resolve(body);
+    });
+  });
 }
