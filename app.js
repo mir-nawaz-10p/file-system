@@ -51,13 +51,17 @@ app.get('/', function(req, res) {
 getStats()
 .then(function(res){
 	let folders = JSON.parse(folders).stats;
+	
+	console.log(JSON.parse(folders).config);
+	// update config.servers
+	
 	for (let name in folders) {
 	  if(!_.isNaN(+name)){
 	  	let dir = global.dir+folders[name];
 	  	if (!fs.existsSync(dir)) {
-		  fs.mkdirSync(dir);
-		  fs.writeFileSync(dir+'init.json', '[]');
-		}
+		  	fs.mkdirSync(dir);
+		  	fs.writeFileSync(dir+'init.json', '[]');
+			}
 	  }
 	  if(typeof folders[name] === 'object' && folders[name].length > 0){
 	  		let dir = global.dir+name;
@@ -88,6 +92,7 @@ getStats()
 	}
 })
 .catch(function(err){
+updateConfig();
 console.log(err);
 });
 
@@ -157,8 +162,6 @@ function getFileContent(servers, pathname, callback) {
 
 }
 
-updateConfig();
-
 function updateConfig(){
 	var current = _.find(config.servers, {name: config.name});
 	if(!current){
@@ -177,21 +180,8 @@ function updateConfig(){
 		current.cost = config.cost;
 		config.servers.push(current);
 	}
-	var servers = config.servers;
-	_.remove(servers,{name:config.name});
-	let promises = [];
-	for(let server of servers){
-		var url = `http://${server.host}:${server.port}/config`;
-    var body = {
-      replicate: config.replicate,
-      server: current
-    }
-    promises.push(requestServer(url, body));
-	}	
-	Promise.all(promises)
-	.then()
-	.catch();
 	fs.writeFile(path.join(global.home, 'config.json'), JSON.stringify(config, null, 2), function(err) {});
+	updateServersConfig(config.servers);
 }
 
 function requestServer(url, body){
@@ -206,4 +196,19 @@ function requestServer(url, body){
       resolve(body);
     });
   });
+}
+
+
+function updateServersConfig(servers){
+	_.remove(servers, {name: config.name});
+	let promises = [];
+	for(let server of servers){
+		var url = `http://${server.host}:${server.port}/config`;
+	    var body = {
+	      replicate: config.replicate,
+	      server: current
+	    }
+    	promises.push(requestServer(url, body));
+	}	
+	Promise.all(promises).then().catch();
 }
