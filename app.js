@@ -9,6 +9,7 @@ let bodyParser = require('body-parser');
 let request = require('request');
 let fs = require('fs');
 let _ = require('lodash');
+let cron = require('node-cron');
 
 let app = express();
 
@@ -225,4 +226,39 @@ function updateServersConfig(servers, current){
     	promises.push(requestServer(url, body));
 	}	
 	Promise.all(promises).then().catch();
+}
+
+cron.schedule('*/10 * * * * *', function(){
+	delete require.cache[require.resolve('./config.json')];
+  config = require('./config.json');
+  
+  for(let server of config.servers){
+  	let url = `http://${server.host}:${server.port}/challenge`;
+  	heartBeat(url)
+  	.then(function(res){
+  		if(res){
+				config.servers = _.concat(config.servers, _.differenceBy(JSON.parse(res), config.servers, 'name'));
+				
+  		}
+  		else{
+  			for(let host of config.servers){
+  				if(host.name === server.name){
+  					host.live = false;
+  				}
+  			}
+  		}
+  		fs.writeFile(path.join(global.home, 'config.json'), JSON.stringify(config, null, 2), function(err) {});
+  	});
+  }
+});
+
+
+function heartBeat(url){
+  return new Promise(function(resolve, reject){
+    var options = { method: 'GET', url: url};
+    request(options, function (error, response, body) {
+      if (error) resolve(false);
+      resolve(body);
+    });
+  });
 }

@@ -1,7 +1,7 @@
 {
   "rootDir": "/root",
   "rootWeb": "/web",
-  "replicate": "2",
+  "replicate": "3",
   "name": "server-0",
   "host": "127.0.0.1",
   "cost": "5",

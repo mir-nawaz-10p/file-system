@@ -6,6 +6,7 @@
     "body-parser": "^1.17.1",
     "express": "^4.14.3",
     "lodash": "~4.17.4",
+    "node-cron": "^1.1.3",
     "request": "^2.81.0",
     "rmdir": "^1.2.0"
   },
