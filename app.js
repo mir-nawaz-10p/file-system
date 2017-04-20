@@ -50,11 +50,21 @@ app.get('/', function(req, res) {
 
 getStats()
 .then(function(res){
-	let folders = JSON.parse(folders).stats;
-	
-	console.log(JSON.parse(folders).config);
-	// update config.servers
-	
+	let folders = JSON.parse(res).stats;
+
+	updateConfig()
+	.then(function(){
+		let hosts = JSON.parse(res).config;
+		let newHosts = [];
+		for(let host of hosts){
+			if(!_.find(config.servers, {name: host.name})){
+				newHosts.push(host);
+			}
+		}
+		config.servers.concat(newHosts);
+		fs.writeFile(path.join(global.home, 'config.json'), JSON.stringify(config, null, 2), function(){});
+	});
+
 	for (let name in folders) {
 	  if(!_.isNaN(+name)){
 	  	let dir = global.dir+folders[name];
@@ -123,7 +133,7 @@ function _stats(servers, callback){
       _stats(servers, callback);
 		  }
 		  else{
-		  	callback(undefined, body);
+		  	return callback(undefined, body);
 		  }
   });
 }
@@ -163,25 +173,29 @@ function getFileContent(servers, pathname, callback) {
 }
 
 function updateConfig(){
-	var current = _.find(config.servers, {name: config.name});
-	if(!current){
-		var host = {
-			name: config.name,
-			host: config.host,
-			port: config.port,
-			cost: config.cost,
-			live: true
+	return new Promise(function(resolve){
+		var current = _.find(config.servers, {name: config.name});
+		if(!current){
+			var host = {
+				name: config.name,
+				host: config.host,
+				port: config.port,
+				cost: config.cost,
+				live: true
+			}
+			config.servers.push(host);
 		}
-		config.servers.push(host);
-	}
-	else{
-		_.remove(config.servers, {name: config.name})
-		current.live = true;
-		current.cost = config.cost;
-		config.servers.push(current);
-	}
-	fs.writeFile(path.join(global.home, 'config.json'), JSON.stringify(config, null, 2), function(err) {});
-	updateServersConfig(config.servers);
+		else{
+			_.remove(config.servers, {name: config.name})
+			current.live = true;
+			current.cost = config.cost;
+			config.servers.push(current);
+		}
+		fs.writeFile(path.join(global.home, 'config.json'), JSON.stringify(config, null, 2), function(err) {
+			updateServersConfig(config.servers, current);
+			resolve(true)
+		});
+	});
 }
 
 function requestServer(url, body){
@@ -199,7 +213,7 @@ function requestServer(url, body){
 }
 
 
-function updateServersConfig(servers){
+function updateServersConfig(servers, current){
 	_.remove(servers, {name: config.name});
 	let promises = [];
 	for(let server of servers){
