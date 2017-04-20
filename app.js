@@ -257,6 +257,7 @@ function heartBeat(url, config, server){
   return new Promise(function(resolve, reject){
   	if(config.name === server.name){
   		resolve(false);
+  		return;
   	}
     var options = { method: 'GET', url: url};
     request(options, function (error, response, body) {
