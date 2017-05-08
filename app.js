@@ -201,7 +201,8 @@ function updateConfig(){
 
 function requestServer(url, body){
   return new Promise(function(resolve, reject){
-    var options = { method: 'POST',
+    var options = { 
+    	method: 'POST',
       url: url,
       body: body,
       json: true };
@@ -231,14 +232,13 @@ function updateServersConfig(servers, current){
 cron.schedule('*/10 * * * * *', function(){
 	delete require.cache[require.resolve('./config.json')];
   config = require('./config.json');
-  
+  _.remove(config.servers, {name: config.name});
   for(let server of config.servers){
   	let url = `http://${server.host}:${server.port}/challenge`;
   	heartBeat(url, config, server)
   	.then(function(res){
   		if(res){
 				config.servers = _.concat(config.servers, _.differenceBy(JSON.parse(res), config.servers, 'name'));
-				
   		}
   		else{
   			for(let host of config.servers){
