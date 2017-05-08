@@ -96,12 +96,12 @@ getStats()
 	  						else{
 	  							fs.writeFileSync(fileDir, res);
 	  						}
-	  						console.log("Sync Complete");
 	  				});
 	  			}
 	  		}
-	  }
-	}
+	  	}
+		}
+	console.log("Sync Complete");
 })
 .catch(function(err){
 updateConfig();
