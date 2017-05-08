@@ -96,6 +96,7 @@ getStats()
 	  						else{
 	  							fs.writeFileSync(fileDir, res);
 	  						}
+	  						console.log("Sync Complete");
 	  				});
 	  			}
 	  		}
