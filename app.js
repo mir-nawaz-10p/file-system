@@ -10,6 +10,7 @@ let request = require('request');
 let fs = require('fs');
 let _ = require('lodash');
 let cron = require('node-cron');
+let rmdir = require('rmdir');
 
 let app = express();
 
@@ -52,7 +53,8 @@ app.get('/', function(req, res) {
 getStats()
 .then(function(res){
 	let folders = JSON.parse(res).stats;
-
+	let remoteStats = []; 
+	let localStats = [];
 	updateConfig()
 	.then(function(){
 		let hosts = JSON.parse(res).config;
@@ -65,16 +67,19 @@ getStats()
 		config.servers.concat(newHosts);
 		fs.writeFile(path.join(global.home, 'config.json'), JSON.stringify(config, null, 2), function(){});
 	});
-
-	for (let name in folders) {
-	  if(!_.isNaN(+name)){
-	  	let dir = global.dir+folders[name];
-	  	if (!fs.existsSync(dir)) {
-		  	fs.mkdirSync(dir);
-		  	fs.writeFileSync(dir+'init.json', '[]');
-			}
-	  }
-	  if(typeof folders[name] === 'object' && folders[name].length > 0){
+	_getLocalStats()
+	.then(function(_localStats){
+		localStats = _localStats;
+		for (let name in folders) {
+		  if(!_.isNaN(+name)){
+		  	let dir = global.dir+folders[name];
+		  	remoteStats.push(dir);
+		  	if (!fs.existsSync(dir)) {
+			  	fs.mkdirSync(dir);
+			  	fs.writeFileSync(dir+'init.json', '[]');
+				}
+		  }
+		  if(typeof folders[name] === 'object' && folders[name].length > 0){
 	  		let dir = global.dir+name;
 	  		let initFile = dir+'init.json';
 	  		if(!fs.existsSync(initFile)){
@@ -83,6 +88,7 @@ getStats()
 	  		fs.writeFileSync(dir+'init.json', JSON.stringify(folders[name], null, 2));
 	  		for(let file of folders[name]){
 	  			let fileDir = dir+file.Name;
+	  			remoteStats.push(fileDir);
 	  			let servers = file.Server;
 	  			let index = _.indexOf(servers, config.name);
 	  			if(index >= 0){
@@ -101,7 +107,15 @@ getStats()
 	  		}
 	  	}
 		}
-	console.log("Sync Complete");
+		let fldrs = _.difference(localStats, remoteStats);
+		for(let fldr of fldrs){
+			fldr = fldr.slice(0, -1);
+			if(fs.existsSync(fldr)){
+				rmdir(fldr, function (err, dirs, files) {});
+			}
+		}
+		console.log("Sync Complete");
+	});
 })
 .catch(function(err){
 updateConfig();
@@ -266,4 +280,37 @@ function heartBeat(url, config, server){
       resolve(body);
     });
   });
+}
+
+function _getLocalStats(){
+	return new Promise(function(resolve, reject){
+			let options = {
+	      method: 'GET',
+				url: `http://${config.host}:${config.port}/stats`
+		};
+	  request(options, function(error, response, body) {
+	  	if (error) reject(false);
+  		let localStats = [];
+		  let folders = JSON.parse(body).stats;
+		  for (let name in folders) {
+			  if(!_.isNaN(+name)){
+			  	let dir = global.dir+folders[name];
+			  	localStats.push(dir);
+			  }
+			  if(typeof folders[name] === 'object' && folders[name].length > 0){
+		  		let dir = global.dir+name;
+		  		let initFile = dir+'init.json';
+		  		if(!fs.existsSync(initFile)){
+		  			fs.writeFileSync(dir+'init.json', '[]');
+		  		}
+		  		fs.writeFileSync(dir+'init.json', JSON.stringify(folders[name], null, 2));
+		  		for(let file of folders[name]){
+		  			let fileDir = dir+file.Name;
+		  			localStats.push(fileDir);
+		  		}
+			  }
+			}
+			resolve(localStats);
+	  });
+	});
 }
